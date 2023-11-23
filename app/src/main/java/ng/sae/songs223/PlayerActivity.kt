@@ -15,12 +15,12 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 
-class MainActivity : AppCompatActivity() {
+class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide();
 
-        setContentView(R.layout.activity_main2)
+        setContentView(R.layout.activity_player)
 
         val audioUri = readAudio("test.l8f", this)
 
