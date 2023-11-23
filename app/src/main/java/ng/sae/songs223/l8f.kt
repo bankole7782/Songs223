@@ -155,6 +155,11 @@ fun readAudio(songFileName: String, context: Context): Uri {
     return tmpAudioFile.toUri()
 }
 
+fun getVideoLength(songFileName: String, context: Context): Int {
+    val videoHeader = readHeaderFromVideo(songFileName, context)
+    return videoHeader.MobileFrames.size
+}
+
 fun readMobileFrames(songFileName: String, context: Context, seconds: Int): Uri {
     val headerLength = getHeaderLengthFromVideo(songFileName, context)
     val videoHeader = readHeaderFromVideo(songFileName, context)
@@ -185,7 +190,7 @@ fun readMobileFrames(songFileName: String, context: Context, seconds: Int): Uri 
         }
     }
 
-    val currentFrameBytes = buffer.sliceArray(readFrameOffset..readFrameOffset+toReadSize)
+    val currentFrameBytes = buffer.sliceArray(readFrameOffset until readFrameOffset+toReadSize)
     val outputDir = context.cacheDir
     val tmpPngFile = File(outputDir, "tmp_frame.png")
     tmpPngFile.writeBytes(currentFrameBytes)

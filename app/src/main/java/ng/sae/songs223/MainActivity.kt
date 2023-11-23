@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         val currentFrame = readMobileFrames("test.l8f", context, 100)
         frameImg.setImageURI(currentFrame)
-
+        Log.v("info", "video length: " + getVideoLength("test.l8f", this).toString())
         CoroutineScope(Dispatchers.IO).launch {
             while(true) {
                 var seconds =
