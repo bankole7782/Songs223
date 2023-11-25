@@ -44,7 +44,7 @@ class PlayerActivity : AppCompatActivity() {
         val playSeconds: TextView = findViewById(R.id.play_seconds)
         val context = this
 
-        val currentFrame = readMobileFrames("test.l8f", context, 100)
+        val currentFrame = readMobileFrames("test.l8f", context, 0)
         frameImg.setImageURI(currentFrame)
         Log.v("info", "video length: " + getVideoLength("test.l8f", this).toString())
         CoroutineScope(Dispatchers.IO).launch {
