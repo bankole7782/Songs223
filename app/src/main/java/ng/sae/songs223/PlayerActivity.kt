@@ -89,6 +89,46 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
 
+        val nextButton: Button = findViewById(R.id.next_button)
+        nextButton.setOnClickListener{
+            val songList = getFolderList(context, folder!!)
+            val songIndex = songList.indexOf(song)
+
+            if (songIndex != songList.size-1) {
+                currentPlayingSong = songList[songIndex+1]
+                song = songList[songIndex+1]
+                val songFile = File(getExternalFilesDir(""), "$folder/$song")
+                val audioUri = readAudio(songFile, this)
+
+                val songPath: TextView = findViewById(R.id.song_short_path)
+                songPath.text = "$folder/$song"
+                globalMediaPlayer!!.reset()
+                globalMediaPlayer!!.setDataSource(context, audioUri)
+                globalMediaPlayer!!.prepare()
+                globalMediaPlayer!!.start()
+            }
+        }
+
+        val prevButton: Button = findViewById(R.id.prev_button)
+        prevButton.setOnClickListener{
+            val songList = getFolderList(context, folder!!)
+            val songIndex = songList.indexOf(song)
+
+            if (songIndex != 0) {
+                currentPlayingSong = songList[songIndex-1]
+                song = songList[songIndex-1]
+                val songFile = File(getExternalFilesDir(""), "$folder/$song")
+                val audioUri = readAudio(songFile, this)
+
+                val songPath: TextView = findViewById(R.id.song_short_path)
+                songPath.text = "$folder/$song"
+                globalMediaPlayer!!.reset()
+                globalMediaPlayer!!.setDataSource(context, audioUri)
+                globalMediaPlayer!!.prepare()
+                globalMediaPlayer!!.start()
+            }
+        }
+
         val frameImg: ImageView = findViewById(R.id.frame_img)
         val playSeconds: TextView = findViewById(R.id.play_seconds)
 
