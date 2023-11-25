@@ -3,6 +3,7 @@ package ng.sae.songs223
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -28,6 +29,8 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import ng.sae.songs223.ui.theme.Songs223Theme
 import java.io.File
+
+var globalMediaPlayer: MediaPlayer? = null
 
 class StartActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

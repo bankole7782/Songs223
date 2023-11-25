@@ -33,17 +33,26 @@ class PlayerActivity : AppCompatActivity() {
 
         // Declaring and Initializing
         // the MediaPlayer to play audio.mp3
-        val mMediaPlayer = MediaPlayer.create(this, audioUri)
+        if (globalMediaPlayer == null)  {
+            val mMediaPlayer = MediaPlayer.create(this, audioUri)
+            globalMediaPlayer = mMediaPlayer
+        } else {
+            globalMediaPlayer!!.stop()
+            globalMediaPlayer!!.release()
+
+            val mMediaPlayer = MediaPlayer.create(this, audioUri)
+            globalMediaPlayer = mMediaPlayer
+        }
 
         val playButton: Button = findViewById(R.id.play_button)
         playButton.setOnClickListener{
-            mMediaPlayer.start()
+            globalMediaPlayer!!.start()
         }
 
         val pauseButton: Button = findViewById(R.id.pause_button)
         pauseButton.setOnClickListener{
-            if (mMediaPlayer.isPlaying) {
-                mMediaPlayer.pause()
+            if (globalMediaPlayer!!.isPlaying) {
+                globalMediaPlayer!!.pause()
             }
         }
 
@@ -57,7 +66,7 @@ class PlayerActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             while(true) {
                 var seconds =
-                    TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.currentPosition.toLong()).toInt()
+                    TimeUnit.MILLISECONDS.toSeconds(globalMediaPlayer!!.currentPosition.toLong()).toInt()
                 var currentFrame = readMobileFrames(songFile, context, seconds)
                 val bmOptions = BitmapFactory.Options()
                 val bitmap = BitmapFactory.decodeFile(currentFrame.path, bmOptions)
