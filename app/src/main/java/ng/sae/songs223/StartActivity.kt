@@ -6,7 +6,6 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -38,7 +37,6 @@ import java.io.File
 var globalMediaPlayer: MediaPlayer? = null
 var currentPlayingFolder: String? = null
 var currentPlayingSong: String? = null
-var isPlaying = MutableLiveData(false)
 
 class StartActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,7 +91,7 @@ fun HomeScreen() {
 
         val dFile = File(context.getExternalFilesDir(""), "")
         val rootFiles = dFile.listFiles()
-        var folders = ArrayList<String>()
+        val folders = ArrayList<String>()
         for (rFile in rootFiles) {
             if (rFile.isDirectory) {
                 folders.add(rFile.name)
@@ -139,7 +137,6 @@ fun HomeScreen() {
         Button(
             onClick = {
                 if (currentPlayingSong != null) {
-                    Log.v("info", "resumed clicked")
                     val intent1 = Intent(mContext, PlayerActivity::class.java)
                     intent1.putExtra("folder", currentPlayingFolder)
                     intent1.putExtra("song", currentPlayingSong)
@@ -194,7 +191,6 @@ fun FoldersView(folders: ArrayList<String>, context: Context) {
                 elevation = 6.dp
 
             ) {
-                Log.v("info", folders[it])
                 Text(folders[it], modifier = Modifier.padding(10.dp))
             }
         }

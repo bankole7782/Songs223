@@ -3,10 +3,8 @@ package ng.sae.songs223
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +14,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import ng.sae.songs223.ui.theme.Songs223Theme
@@ -52,7 +49,6 @@ class FolderListActivity : ComponentActivity() {
 
 fun getFolderList(context: Context, folder: String): ArrayList<String> {
     val dFile = File(context.getExternalFilesDir(""), "$folder/")
-    Log.v("info", dFile.exists().toString())
     val rootFiles = dFile.listFiles()
 
     var songList = ArrayList<String>()
@@ -68,7 +64,6 @@ fun getFolderList(context: Context, folder: String): ArrayList<String> {
 fun FolderList(folder: String) {
     val context = LocalContext.current
     val songList = getFolderList(context, folder)
-    Log.v("info", songList.toString())
     Column {
         Text(folder)
         FolderListView(songList, folder, context)
@@ -108,7 +103,6 @@ fun FolderListView(songList: ArrayList<String>, folder: String, context: Context
                 elevation = 6.dp
 
             ) {
-                Log.v("info", songList[it])
                 Text(songList[it],  modifier = Modifier.padding(10.dp))
             }
         }

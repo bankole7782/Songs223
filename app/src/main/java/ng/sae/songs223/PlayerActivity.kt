@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.media.MediaPlayer.OnCompletionListener
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.w3c.dom.Text
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -32,8 +32,12 @@ class PlayerActivity : AppCompatActivity() {
         val songFile = File(getExternalFilesDir(""), "$folder/$song")
         val audioUri = readAudio(songFile, this)
 
-        val songPath: TextView = findViewById(R.id.song_short_path)
-        songPath.text = "$folder/$song"
+        // update display
+        val folderText: TextView = findViewById(R.id.folder_name)
+        folderText.text = folder
+        val songText: TextView = findViewById(R.id.song_name)
+        songText.text = song
+
 
         currentPlayingFolder = folder
         currentPlayingSong = song
@@ -62,8 +66,12 @@ class PlayerActivity : AppCompatActivity() {
                 val songFile = File(getExternalFilesDir(""), "$folder/$song")
                 val audioUri = readAudio(songFile, this)
 
-                val songPath: TextView = findViewById(R.id.song_short_path)
-                songPath.text = "$folder/$song"
+                // update display
+                val folderText: TextView = findViewById(R.id.folder_name)
+                folderText.text = folder
+                val songText: TextView = findViewById(R.id.song_name)
+                songText.text = song
+
                 mPlayer.reset()
                 mPlayer.setDataSource(context, audioUri)
                 mPlayer.prepare()
@@ -100,8 +108,12 @@ class PlayerActivity : AppCompatActivity() {
                 val songFile = File(getExternalFilesDir(""), "$folder/$song")
                 val audioUri = readAudio(songFile, this)
 
-                val songPath: TextView = findViewById(R.id.song_short_path)
-                songPath.text = "$folder/$song"
+                // update display
+                val folderText: TextView = findViewById(R.id.folder_name)
+                folderText.text = folder
+                val songText: TextView = findViewById(R.id.song_name)
+                songText.text = song
+
                 globalMediaPlayer!!.reset()
                 globalMediaPlayer!!.setDataSource(context, audioUri)
                 globalMediaPlayer!!.prepare()
@@ -120,8 +132,12 @@ class PlayerActivity : AppCompatActivity() {
                 val songFile = File(getExternalFilesDir(""), "$folder/$song")
                 val audioUri = readAudio(songFile, this)
 
-                val songPath: TextView = findViewById(R.id.song_short_path)
-                songPath.text = "$folder/$song"
+                // update display
+                val folderText: TextView = findViewById(R.id.folder_name)
+                folderText.text = folder
+                val songText: TextView = findViewById(R.id.song_name)
+                songText.text = song
+
                 globalMediaPlayer!!.reset()
                 globalMediaPlayer!!.setDataSource(context, audioUri)
                 globalMediaPlayer!!.prepare()
@@ -139,7 +155,6 @@ class PlayerActivity : AppCompatActivity() {
             currentFrame = readMobileFrames(songFile, context, seconds)
         }
         frameImg.setImageURI(currentFrame)
-        Log.v("info", "video length: " + getVideoLength(songFile, this).toString())
         CoroutineScope(Dispatchers.IO).launch {
             while(true) {
                 val seconds =
