@@ -78,14 +78,6 @@ fun HomeScreen() {
             FoldersView(folders = folders, mContext)
         }
 
-//        Column  {
-//            Button(onClick = {
-//                mContext.startActivity(Intent(mContext, PlayerActivity::class.java))
-//            }) {
-//                Text("Open Test Player")
-//            }
-//
-//        }
     } else {
 
         Column {
@@ -124,7 +116,9 @@ fun FoldersView(folders: ArrayList<String>, context: Context) {
                 onClick = {
 //                    selectedCard = !selectedCard
 //                    statesOfImages[ imagesList[it].imageName ] = selectedCard
-                    context.startActivity(Intent(context, PlayerActivity::class.java))
+                    val intent1 = Intent(context, FolderListActivity::class.java)
+                    intent1.putExtra("folder", folders[it])
+                    context.startActivity(intent1)
                 },
 
                 // on below line we are adding padding from our all sides.

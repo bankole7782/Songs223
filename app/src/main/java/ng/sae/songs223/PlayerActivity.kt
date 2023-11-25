@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 
@@ -22,7 +23,13 @@ class PlayerActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_player)
 
-        val audioUri = readAudio("test.l8f", this)
+        val folder = intent.getStringExtra("folder")
+        val song = intent.getStringExtra("song")
+        val songFile = File(getExternalFilesDir(""), "$folder/$song")
+        val audioUri = readAudio(songFile, this)
+
+        val songPath: TextView = findViewById(R.id.song_short_path)
+        songPath.text = "$folder/$song"
 
         // Declaring and Initializing
         // the MediaPlayer to play audio.mp3
@@ -44,14 +51,14 @@ class PlayerActivity : AppCompatActivity() {
         val playSeconds: TextView = findViewById(R.id.play_seconds)
         val context = this
 
-        val currentFrame = readMobileFrames("test.l8f", context, 0)
+        val currentFrame = readMobileFrames(songFile, context, 0)
         frameImg.setImageURI(currentFrame)
-        Log.v("info", "video length: " + getVideoLength("test.l8f", this).toString())
+        Log.v("info", "video length: " + getVideoLength(songFile, this).toString())
         CoroutineScope(Dispatchers.IO).launch {
             while(true) {
                 var seconds =
                     TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.currentPosition.toLong()).toInt()
-                var currentFrame = readMobileFrames("test.l8f", context, seconds)
+                var currentFrame = readMobileFrames(songFile, context, seconds)
                 val bmOptions = BitmapFactory.Options()
                 val bitmap = BitmapFactory.decodeFile(currentFrame.path, bmOptions)
                 CoroutineScope(Dispatchers.Main).launch {

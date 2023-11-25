@@ -7,9 +7,9 @@ import androidx.core.net.toUri
 import java.io.File
 import java.io.InputStream
 
-fun getHeaderLengthFromVideo(songFileName: String, context: Context): Int {
+fun getHeaderLengthFromVideo(songFileName: File, context: Context): Int {
     var headerLengthStr = ""
-    val songInputStream = context.assets.open(songFileName)
+    val songInputStream = songFileName.inputStream()
     while (true) {
         val buffer = ByteArray(1)
         songInputStream.read(buffer)
@@ -35,9 +35,9 @@ data class VideoHeader (
     val MobileVideoSize: Int,
 )
 
-fun readHeaderFromVideo(songFileName: String, context: Context): VideoHeader {
+fun readHeaderFromVideo(songFileName: File, context: Context): VideoHeader {
     val headerLength = getHeaderLengthFromVideo(songFileName, context)
-    val songInputStream = context.assets.open(songFileName)
+    val songInputStream = songFileName.inputStream()
     val buffer = ByteArray(headerLength)
     val headerOffset = headerLength.toString().length + 1
     songInputStream.skip(headerOffset.toLong())
@@ -138,11 +138,11 @@ fun getRandomString(length: Int) : String {
         .joinToString("")
 }
 
-fun readAudio(songFileName: String, context: Context): Uri {
+fun readAudio(songFileName: File, context: Context): Uri {
     val headerLength = getHeaderLengthFromVideo(songFileName, context)
     val audioOffset = headerLength + 1 + headerLength.toString().length
     val videoHeader = readHeaderFromVideo(songFileName, context)
-    val songInputStream = context.assets.open(songFileName)
+    val songInputStream = songFileName.inputStream()
     val buffer = ByteArray(videoHeader.AudioSize)
     songInputStream.skip(audioOffset.toLong())
     songInputStream.read(buffer, 0, videoHeader.AudioSize)
@@ -155,15 +155,15 @@ fun readAudio(songFileName: String, context: Context): Uri {
     return tmpAudioFile.toUri()
 }
 
-fun getVideoLength(songFileName: String, context: Context): Int {
+fun getVideoLength(songFileName: File, context: Context): Int {
     val videoHeader = readHeaderFromVideo(songFileName, context)
     return videoHeader.MobileFrames.size
 }
 
-fun readMobileFrames(songFileName: String, context: Context, seconds: Int): Uri {
+fun readMobileFrames(songFileName: File, context: Context, seconds: Int): Uri {
     val headerLength = getHeaderLengthFromVideo(songFileName, context)
     val videoHeader = readHeaderFromVideo(songFileName, context)
-    val songInputStream = context.assets.open(songFileName)
+    val songInputStream = songFileName.inputStream()
 
     val buffer = ByteArray(videoHeader.MobileVideoSize)
     val audioOffset = headerLength + 1 + headerLength.toString().length
