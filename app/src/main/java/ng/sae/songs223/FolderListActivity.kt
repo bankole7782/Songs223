@@ -40,6 +40,7 @@ class FolderListActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
 @Composable
@@ -89,6 +90,7 @@ fun FolderListView(songList: ArrayList<String>, folder: String, context: Context
                     val intent1 = Intent(context, PlayerActivity::class.java)
                     intent1.putExtra("folder", folder)
                     intent1.putExtra("song", songList[it])
+                    intent1.putExtra("resume", "false")
                     context.startActivity(intent1)
                 },
 

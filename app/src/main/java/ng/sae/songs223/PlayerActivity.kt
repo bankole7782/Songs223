@@ -8,12 +8,14 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.TimeUnit
+
 
 
 class PlayerActivity : AppCompatActivity() {
@@ -25,18 +27,22 @@ class PlayerActivity : AppCompatActivity() {
 
         val folder = intent.getStringExtra("folder")
         val song = intent.getStringExtra("song")
+        val resume = intent.getStringExtra("resume")
         val songFile = File(getExternalFilesDir(""), "$folder/$song")
         val audioUri = readAudio(songFile, this)
 
         val songPath: TextView = findViewById(R.id.song_short_path)
         songPath.text = "$folder/$song"
 
+        currentPlayingFolder = folder
+        currentPlayingSong = song
+
         // Declaring and Initializing
         // the MediaPlayer to play audio.mp3
         if (globalMediaPlayer == null)  {
             val mMediaPlayer = MediaPlayer.create(this, audioUri)
             globalMediaPlayer = mMediaPlayer
-        } else {
+        } else if (resume != "true") {
             globalMediaPlayer!!.stop()
             globalMediaPlayer!!.release()
 
@@ -44,9 +50,14 @@ class PlayerActivity : AppCompatActivity() {
             globalMediaPlayer = mMediaPlayer
         }
 
+        if (resume != "true") {
+            globalMediaPlayer!!.start()
+        }
         val playButton: Button = findViewById(R.id.play_button)
         playButton.setOnClickListener{
-            globalMediaPlayer!!.start()
+            if (! globalMediaPlayer!!.isPlaying) {
+                globalMediaPlayer!!.start()
+            }
         }
 
         val pauseButton: Button = findViewById(R.id.pause_button)
@@ -60,12 +71,17 @@ class PlayerActivity : AppCompatActivity() {
         val playSeconds: TextView = findViewById(R.id.play_seconds)
         val context = this
 
-        val currentFrame = readMobileFrames(songFile, context, 0)
+        var currentFrame = readMobileFrames(songFile, context, 0)
+        if (resume == "true") {
+            val seconds =
+                TimeUnit.MILLISECONDS.toSeconds(globalMediaPlayer!!.currentPosition.toLong()).toInt()
+            currentFrame = readMobileFrames(songFile, context, seconds)
+        }
         frameImg.setImageURI(currentFrame)
         Log.v("info", "video length: " + getVideoLength(songFile, this).toString())
         CoroutineScope(Dispatchers.IO).launch {
             while(true) {
-                var seconds =
+                val seconds =
                     TimeUnit.MILLISECONDS.toSeconds(globalMediaPlayer!!.currentPosition.toLong()).toInt()
                 var currentFrame = readMobileFrames(songFile, context, seconds)
                 val bmOptions = BitmapFactory.Options()

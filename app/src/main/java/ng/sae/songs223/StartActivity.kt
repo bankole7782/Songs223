@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getExternalFilesDirs
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.MutableLiveData
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.PermissionState
@@ -31,11 +34,30 @@ import ng.sae.songs223.ui.theme.Songs223Theme
 import java.io.File
 
 var globalMediaPlayer: MediaPlayer? = null
+var currentPlayingFolder: String? = null
+var currentPlayingSong: String? = null
+val isPlaying = MutableLiveData(false)
 
 class StartActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        setContent {
+            Songs223Theme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    HomeScreen()
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         setContent {
             Songs223Theme {
@@ -77,7 +99,22 @@ fun HomeScreen() {
         }
 
 
+
         Column {
+            Button(
+                onClick = {
+                    if (currentPlayingSong != null) {
+                        Log.v("info", "resumed clicked")
+                        val intent1 = Intent(context, PlayerActivity::class.java)
+                        intent1.putExtra("folder", currentPlayingFolder)
+                        intent1.putExtra("song", currentPlayingSong)
+                        intent1.putExtra("resume", "true")
+                        context.startActivity(intent1)
+                    }
+                }
+            ) {
+                Text("Now Playing")
+            }
             FoldersView(folders = folders, mContext)
         }
 
@@ -173,4 +210,19 @@ private fun getTextToShowGivenPermissions(
         }
     )
     return textToShow.toString()
+}
+
+@Composable
+fun Lifecycle.observeAsState(): State<Lifecycle.Event> {
+    val state = remember { mutableStateOf(Lifecycle.Event.ON_ANY) }
+    DisposableEffect(this) {
+        val observer = LifecycleEventObserver { _, event ->
+            state.value = event
+        }
+        this@observeAsState.addObserver(observer)
+        onDispose {
+            this@observeAsState.removeObserver(observer)
+        }
+    }
+    return state
 }
