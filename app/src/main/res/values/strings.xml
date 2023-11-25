@@ -11,4 +11,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="title_activity_start">StartActivity</string>
     <string name="title_activity_folder_list">FolderListActivity</string>
+    <string name="title_activity_info">InfoActivity</string>
 </resources>

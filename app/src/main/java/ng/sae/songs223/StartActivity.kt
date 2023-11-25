@@ -19,8 +19,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.getExternalFilesDirs
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.Lifecycle
@@ -100,20 +102,40 @@ fun HomeScreen() {
 
 
 
-        Column {
-            Button(
-                onClick = {
-                    if (currentPlayingSong != null) {
-                        Log.v("info", "resumed clicked")
-                        val intent1 = Intent(context, PlayerActivity::class.java)
-                        intent1.putExtra("folder", currentPlayingFolder)
-                        intent1.putExtra("song", currentPlayingSong)
-                        intent1.putExtra("resume", "true")
-                        context.startActivity(intent1)
+        Column(
+            modifier = Modifier.padding(15.dp),
+        ){
+
+            Row {
+                Text("Songs223", color = Color.Gray, style= TextStyle(
+                    fontSize = 24.sp
+                ))
+                Spacer(modifier = Modifier.width(width=10.dp))
+                Button(
+                    onClick = {
+                        if (currentPlayingSong != null) {
+                            Log.v("info", "resumed clicked")
+                            val intent1 = Intent(context, PlayerActivity::class.java)
+                            intent1.putExtra("folder", currentPlayingFolder)
+                            intent1.putExtra("song", currentPlayingSong)
+                            intent1.putExtra("resume", "true")
+                            context.startActivity(intent1)
+                        }
                     }
+                ) {
+                    Text("Now Playing")
                 }
-            ) {
-                Text("Now Playing")
+                Spacer(modifier = Modifier.width(width=10.dp))
+                Button(onClick = {
+                    mContext.startActivity(Intent(mContext, InfoActivity::class.java))
+                },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Gray,
+                        contentColor = Color.White)
+
+                ) {
+                    Text("Info", color = Color.White)
+                }
             }
             FoldersView(folders = folders, mContext)
         }
@@ -146,7 +168,7 @@ fun FoldersView(folders: ArrayList<String>, context: Context) {
         columns = GridCells.Fixed(2),
         // on below line we are adding padding
         // from all sides to our grid view.
-        modifier = Modifier.padding(10.dp)
+//        modifier = Modifier.padding(5.dp)
     ) {
         items(folders.size) {
             Card(
@@ -169,7 +191,7 @@ fun FoldersView(folders: ArrayList<String>, context: Context) {
 
             ) {
                 Log.v("info", folders[it])
-                Text(folders[it])
+                Text(folders[it], modifier = Modifier.padding(10.dp))
             }
         }
     }
