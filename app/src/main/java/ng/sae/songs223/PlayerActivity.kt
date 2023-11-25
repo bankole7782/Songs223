@@ -1,21 +1,21 @@
 package ng.sae.songs223
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
+import android.media.MediaPlayer.OnCompletionListener
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.TimeUnit
-
 
 
 class PlayerActivity : AppCompatActivity() {
@@ -25,8 +25,9 @@ class PlayerActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_player)
 
+        val context = this
         val folder = intent.getStringExtra("folder")
-        val song = intent.getStringExtra("song")
+        var song = intent.getStringExtra("song")
         val resume = intent.getStringExtra("resume")
         val songFile = File(getExternalFilesDir(""), "$folder/$song")
         val audioUri = readAudio(songFile, this)
@@ -50,10 +51,34 @@ class PlayerActivity : AppCompatActivity() {
             globalMediaPlayer = mMediaPlayer
         }
 
+
+        globalMediaPlayer?.setOnCompletionListener(OnCompletionListener { mPlayer ->
+            val songList = getFolderList(context, folder!!)
+            val songIndex = songList.indexOf(song)
+
+            if (songIndex != songList.size-1) {
+                currentPlayingSong = songList[songIndex+1]
+                song = songList[songIndex+1]
+                val songFile = File(getExternalFilesDir(""), "$folder/$song")
+                val audioUri = readAudio(songFile, this)
+
+                val songPath: TextView = findViewById(R.id.song_short_path)
+                songPath.text = "$folder/$song"
+                mPlayer.reset()
+                mPlayer.setDataSource(context, audioUri)
+                mPlayer.prepare()
+                mPlayer.start()
+
+            }
+        })
+
+        val playButton: Button = findViewById(R.id.play_button)
+
         if (resume != "true") {
             globalMediaPlayer!!.start()
         }
-        val playButton: Button = findViewById(R.id.play_button)
+        playButton.setBackgroundResource(R.drawable.pause)
+
         playButton.setOnClickListener{
             if (! globalMediaPlayer!!.isPlaying) {
                 globalMediaPlayer!!.start()
@@ -66,7 +91,6 @@ class PlayerActivity : AppCompatActivity() {
 
         val frameImg: ImageView = findViewById(R.id.frame_img)
         val playSeconds: TextView = findViewById(R.id.play_seconds)
-        val context = this
 
         var currentFrame = readMobileFrames(songFile, context, 0)
         if (resume == "true") {
@@ -84,7 +108,7 @@ class PlayerActivity : AppCompatActivity() {
                 val bmOptions = BitmapFactory.Options()
                 val bitmap = BitmapFactory.decodeFile(currentFrame.path, bmOptions)
                 CoroutineScope(Dispatchers.Main).launch {
-                    playSeconds.text = seconds.toString()
+                    playSeconds.text = intToDisplaySeconds(seconds)
                     frameImg.setImageBitmap(bitmap)
                 }
                 delay(1000)
@@ -92,3 +116,14 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 }
+
+fun intToDisplaySeconds(seconds: Int): String {
+    val minutes = seconds / 60
+    val seconds = seconds % 60
+    var secondsStr = seconds.toString()
+    if (secondsStr.length == 1) {
+        secondsStr = "0$secondsStr"
+    }
+    return "$minutes:$secondsStr"
+}
+

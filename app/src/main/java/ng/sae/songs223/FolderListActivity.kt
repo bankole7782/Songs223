@@ -50,10 +50,7 @@ class FolderListActivity : ComponentActivity() {
 
 }
 
-@Composable
-fun FolderList(folder: String) {
-    val context = LocalContext.current
-
+fun getFolderList(context: Context, folder: String): ArrayList<String> {
     val dFile = File(context.getExternalFilesDir(""), "$folder/")
     Log.v("info", dFile.exists().toString())
     val rootFiles = dFile.listFiles()
@@ -64,7 +61,13 @@ fun FolderList(folder: String) {
             songList.add(rFile.name)
         }
     }
+    return songList
+}
 
+@Composable
+fun FolderList(folder: String) {
+    val context = LocalContext.current
+    val songList = getFolderList(context, folder)
     Log.v("info", songList.toString())
     Column {
         Text(folder)
@@ -91,8 +94,6 @@ fun FolderListView(songList: ArrayList<String>, folder: String, context: Context
                 // inside our grid view on below line we are
                 // adding on click for each item of our grid view.
                 onClick = {
-//                    selectedCard = !selectedCard
-//                    statesOfImages[ imagesList[it].imageName ] = selectedCard
                     val intent1 = Intent(context, PlayerActivity::class.java)
                     intent1.putExtra("folder", folder)
                     intent1.putExtra("song", songList[it])

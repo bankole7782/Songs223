@@ -38,7 +38,7 @@ import java.io.File
 var globalMediaPlayer: MediaPlayer? = null
 var currentPlayingFolder: String? = null
 var currentPlayingSong: String? = null
-val isPlaying = MutableLiveData(false)
+var isPlaying = MutableLiveData(false)
 
 class StartActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
