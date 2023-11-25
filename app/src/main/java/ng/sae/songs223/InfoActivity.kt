@@ -34,7 +34,7 @@ class InfoActivity : ComponentActivity() {
                         modifier = Modifier.padding(20.dp)
                     ) {
                         Text(
-                            "To Add songs: Connect to Laptop and copy songs with .l8f format to"
+                            "To Add songs: Connect to Laptop and copy songs with .l8f format in a folder to"
                         )
                         Text(
                             songPath, fontWeight = FontWeight.Bold

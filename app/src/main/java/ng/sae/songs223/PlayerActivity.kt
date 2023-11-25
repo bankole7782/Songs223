@@ -57,13 +57,10 @@ class PlayerActivity : AppCompatActivity() {
         playButton.setOnClickListener{
             if (! globalMediaPlayer!!.isPlaying) {
                 globalMediaPlayer!!.start()
-            }
-        }
-
-        val pauseButton: Button = findViewById(R.id.pause_button)
-        pauseButton.setOnClickListener{
-            if (globalMediaPlayer!!.isPlaying) {
+                playButton.setBackgroundResource(R.drawable.pause)
+            } else {
                 globalMediaPlayer!!.pause()
+                playButton.setBackgroundResource(R.drawable.play)
             }
         }
 

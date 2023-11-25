@@ -34,7 +34,14 @@ class FolderListActivity : ComponentActivity() {
                 ) {
                     val folder = intent.getStringExtra("folder")
                     if (folder != null) {
-                        FolderList(folder)
+                        Column(
+                            modifier = Modifier.padding(20.dp)
+
+                        ) {
+                            topBar()
+                            FolderList(folder)
+                        }
+
                     }
                 }
             }
@@ -77,11 +84,10 @@ fun FolderListView(songList: ArrayList<String>, folder: String, context: Context
         columns = GridCells.Fixed(1),
         // on below line we are adding padding
         // from all sides to our grid view.
-        modifier = Modifier.padding(10.dp)
     ) {
         items(songList.size) {
             Card(
-                border = BorderStroke(2.dp, Color.Gray),
+//                border = BorderStroke(2.dp, Color.Gray),
                 // inside our grid view on below line we are
                 // adding on click for each item of our grid view.
                 onClick = {
@@ -102,7 +108,7 @@ fun FolderListView(songList: ArrayList<String>, folder: String, context: Context
 
             ) {
                 Log.v("info", songList[it])
-                Text(songList[it])
+                Text(songList[it],  modifier = Modifier.padding(10.dp))
             }
         }
     }

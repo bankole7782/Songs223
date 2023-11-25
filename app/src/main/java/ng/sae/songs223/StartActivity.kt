@@ -105,44 +105,15 @@ fun HomeScreen() {
         Column(
             modifier = Modifier.padding(15.dp),
         ){
-
-            Row {
-                Text("Songs223", color = Color.Gray, style= TextStyle(
-                    fontSize = 24.sp
-                ))
-                Spacer(modifier = Modifier.width(width=10.dp))
-                Button(
-                    onClick = {
-                        if (currentPlayingSong != null) {
-                            Log.v("info", "resumed clicked")
-                            val intent1 = Intent(context, PlayerActivity::class.java)
-                            intent1.putExtra("folder", currentPlayingFolder)
-                            intent1.putExtra("song", currentPlayingSong)
-                            intent1.putExtra("resume", "true")
-                            context.startActivity(intent1)
-                        }
-                    }
-                ) {
-                    Text("Now Playing")
-                }
-                Spacer(modifier = Modifier.width(width=10.dp))
-                Button(onClick = {
-                    mContext.startActivity(Intent(mContext, InfoActivity::class.java))
-                },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.Gray,
-                        contentColor = Color.White)
-
-                ) {
-                    Text("Info", color = Color.White)
-                }
-            }
+            topBar()
             FoldersView(folders = folders, mContext)
         }
 
     } else {
 
-        Column {
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
             Text(
                 getTextToShowGivenPermissions(
                     multiplePermissionsState.revokedPermissions,
@@ -157,6 +128,41 @@ fun HomeScreen() {
     }
 }
 
+@Composable fun topBar() {
+    val mContext = LocalContext.current
+
+    Row {
+        Text("Songs223", color = Color.Gray, style= TextStyle(
+            fontSize = 24.sp
+        ))
+        Spacer(modifier = Modifier.width(width=10.dp))
+        Button(
+            onClick = {
+                if (currentPlayingSong != null) {
+                    Log.v("info", "resumed clicked")
+                    val intent1 = Intent(mContext, PlayerActivity::class.java)
+                    intent1.putExtra("folder", currentPlayingFolder)
+                    intent1.putExtra("song", currentPlayingSong)
+                    intent1.putExtra("resume", "true")
+                    mContext.startActivity(intent1)
+                }
+            }
+        ) {
+            Text("Now Playing")
+        }
+        Spacer(modifier = Modifier.width(width=10.dp))
+        Button(onClick = {
+            mContext.startActivity(Intent(mContext, InfoActivity::class.java))
+        },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Gray,
+                contentColor = Color.White)
+
+        ) {
+            Text("Info", color = Color.White)
+        }
+    }
+}
 
 // on below line we are creating grid view function for loading our grid view.
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -172,12 +178,10 @@ fun FoldersView(folders: ArrayList<String>, context: Context) {
     ) {
         items(folders.size) {
             Card(
-                border = BorderStroke(2.dp, Color.Gray),
+//                border = BorderStroke(2.dp, Color.Gray),
                 // inside our grid view on below line we are
                 // adding on click for each item of our grid view.
                 onClick = {
-//                    selectedCard = !selectedCard
-//                    statesOfImages[ imagesList[it].imageName ] = selectedCard
                     val intent1 = Intent(context, FolderListActivity::class.java)
                     intent1.putExtra("folder", folders[it])
                     context.startActivity(intent1)
@@ -232,19 +236,4 @@ private fun getTextToShowGivenPermissions(
         }
     )
     return textToShow.toString()
-}
-
-@Composable
-fun Lifecycle.observeAsState(): State<Lifecycle.Event> {
-    val state = remember { mutableStateOf(Lifecycle.Event.ON_ANY) }
-    DisposableEffect(this) {
-        val observer = LifecycleEventObserver { _, event ->
-            state.value = event
-        }
-        this@observeAsState.addObserver(observer)
-        onDispose {
-            this@observeAsState.removeObserver(observer)
-        }
-    }
-    return state
 }
