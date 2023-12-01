@@ -73,56 +73,28 @@ class StartActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen() {
-    val mContext = LocalContext.current
-    val multiplePermissionsState: MultiplePermissionsState = rememberMultiplePermissionsState(
-        listOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-        )
-    )
 
     val context = LocalContext.current
-    if (multiplePermissionsState.allPermissionsGranted) {
+    context.getExternalFilesDir("")?.mkdirs()
 
-        context.getExternalFilesDir("")?.mkdirs()
-
-        val dFile = File(context.getExternalFilesDir(""), "")
-        val rootFiles = dFile.listFiles()
-        val folders = ArrayList<String>()
-        for (rFile in rootFiles) {
-            if (rFile.isDirectory) {
-                folders.add(rFile.name)
-            }
+    val dFile = File(context.getExternalFilesDir(""), "")
+    val rootFiles = dFile.listFiles()
+    val folders = ArrayList<String>()
+    for (rFile in rootFiles) {
+        if (rFile.isDirectory) {
+            folders.add(rFile.name)
         }
+    }
 
 
 
-        Column(
-            modifier = Modifier.padding(15.dp),
-        ){
-            topBar()
-            FoldersView(folders = folders, mContext)
-        }
-
-    } else {
-
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
-            Text(
-                getTextToShowGivenPermissions(
-                    multiplePermissionsState.revokedPermissions,
-                    multiplePermissionsState.shouldShowRationale
-                )
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { multiplePermissionsState.launchMultiplePermissionRequest() }) {
-                Text("Request permissions")
-            }
-        }
+    Column(
+        modifier = Modifier.padding(15.dp),
+    ){
+        topBar()
+        FoldersView(folders = folders, context)
     }
 }
 
@@ -195,41 +167,4 @@ fun FoldersView(folders: ArrayList<String>, context: Context) {
             }
         }
     }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-private fun getTextToShowGivenPermissions(
-    permissions: List<PermissionState>,
-    shouldShowRationale: Boolean
-): String {
-    val revokedPermissionsSize = permissions.size
-    if (revokedPermissionsSize == 0) return ""
-
-    val textToShow = StringBuilder().apply {
-        append("The ")
-    }
-
-    for (i in permissions.indices) {
-        textToShow.append(permissions[i].permission)
-        when {
-            revokedPermissionsSize > 1 && i == revokedPermissionsSize - 2 -> {
-                textToShow.append(", and ")
-            }
-            i == revokedPermissionsSize - 1 -> {
-                textToShow.append(" ")
-            }
-            else -> {
-                textToShow.append(", ")
-            }
-        }
-    }
-    textToShow.append(if (revokedPermissionsSize == 1) "permission is" else "permissions are")
-    textToShow.append(
-        if (shouldShowRationale) {
-            " important. Please grant all of them for the app to function properly."
-        } else {
-            " denied. The app cannot function without them."
-        }
-    )
-    return textToShow.toString()
 }
