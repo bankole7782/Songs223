@@ -55,22 +55,6 @@ class StartActivity : ComponentActivity() {
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        setContent {
-            Songs223Theme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    HomeScreen()
-                }
-            }
-        }
-    }
 }
 
 @Composable
