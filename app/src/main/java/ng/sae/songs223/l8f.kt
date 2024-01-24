@@ -25,7 +25,6 @@ fun getHeaderLengthFromVideo(songFileName: File, context: Context): Int {
 }
 
 data class VideoHeader (
-    val Meta: Map<String,String>,
     val LaptopUniqueFrames: List<List<Int>>,
     val LaptopFrames: Map<Int,Int>,
     val MobileUniqueFrames: List<List<Int>>,
@@ -45,21 +44,6 @@ fun readHeaderFromVideo(songFileName: File, context: Context): VideoHeader {
     songInputStream.close()
 
     val headerStr = String(buffer)
-
-    // begin parsing video Header
-    val metaBeginPart = headerStr.indexOf("meta:")
-    val metaEndPart = headerStr.substring(metaBeginPart).indexOf("::")
-    val metaPart = headerStr.substring(metaBeginPart + "meta:\n".length, metaBeginPart+metaEndPart)
-
-    val meta = HashMap<String, String>()
-    for (line in metaPart.lines()) {
-        val templine = line.trim()
-        if (templine == "") {
-            continue
-        }
-        val partsOfLine = templine.split(":")
-        meta[partsOfLine[0]] = partsOfLine[1].trim()
-    }
 
     val luniqueFramesBeginPart = headerStr.indexOf("laptop_unique_frames:")
     val luniqueFramesEndPart = headerStr.substring(luniqueFramesBeginPart).indexOf("::")
@@ -128,7 +112,7 @@ fun readHeaderFromVideo(songFileName: File, context: Context): VideoHeader {
     val lVideoSize = lines[1].substring("laptop_frames_lump: ".length).toInt()
     val mVideoSize = lines[2].substring("mobile_frames_lump: ".length).toInt()
 
-    return VideoHeader(meta, luniqueFrames, lframes, muniqueFrames, mframes, audioSize, lVideoSize, mVideoSize)
+    return VideoHeader(luniqueFrames, lframes, muniqueFrames, mframes, audioSize, lVideoSize, mVideoSize)
 }
 
 fun getRandomString(length: Int) : String {
