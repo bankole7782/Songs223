@@ -1,36 +1,37 @@
 package ng.sae.songs223
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Environment
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.getExternalFilesDirs
-import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.MutableLiveData
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import coil.compose.AsyncImage
 import ng.sae.songs223.ui.theme.Songs223Theme
 import java.io.File
 
@@ -57,6 +58,30 @@ class StartActivity : ComponentActivity() {
     }
 }
 
+fun getCover(context: Context, folder: String): File {
+    var dFile = File(context.getExternalFilesDir(""), "$folder/cover.jpg")
+    var dFile2 = File(context.getExternalFilesDir(""), "$folder/Cover.jpg")
+
+    var trueCover: File = dFile
+    if (! dFile.exists() && dFile2.exists()) {
+        trueCover = dFile2
+    } else if (! dFile.exists() && ! dFile2.exists()) {
+        context.cacheDir.mkdirs()
+        val noCoverIS = context.assets.open("no_cover.png")
+        val noCoverFile = File(context.cacheDir, "no_cover.png")
+        if (!noCoverFile.exists()) {
+            noCoverFile.writeBytes(noCoverIS.readBytes())
+            Log.d("info", "no cover")
+
+        } else {
+            Log.d("info", "no cover")
+        }
+        trueCover = noCoverFile
+    }
+
+    return trueCover
+}
+
 @Composable
 fun HomeScreen() {
 
@@ -66,6 +91,7 @@ fun HomeScreen() {
     val dFile = File(context.getExternalFilesDir(""), "")
     val rootFiles = dFile.listFiles()
     val folders = ArrayList<String>()
+
     for (rFile in rootFiles) {
         if (rFile.isDirectory) {
             folders.add(rFile.name)
@@ -87,7 +113,7 @@ fun HomeScreen() {
 
     Row {
         Text("Songs223", color = Color.Gray, style= TextStyle(
-            fontSize = 24.sp
+            fontSize = 30.sp, fontWeight = FontWeight.Bold
         ))
         Spacer(modifier = Modifier.width(width=10.dp))
         Button(
@@ -147,7 +173,12 @@ fun FoldersView(folders: ArrayList<String>, context: Context) {
                 elevation = 6.dp
 
             ) {
-                Text(folders[it], modifier = Modifier.padding(10.dp))
+                val coverFile = getCover(LocalContext.current, folders[it])
+                Column {
+                    AsyncImage(model = coverFile, contentDescription = "Album Art")
+                    Text(folders[it], modifier = Modifier.padding(10.dp))
+                }
+
             }
         }
     }

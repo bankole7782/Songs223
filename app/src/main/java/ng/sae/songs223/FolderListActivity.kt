@@ -53,7 +53,7 @@ fun getFolderList(context: Context, folder: String): ArrayList<String> {
 
     var songList = ArrayList<String>()
     for (rFile in rootFiles) {
-        if (!rFile.isDirectory) {
+        if (!rFile.isDirectory && rFile.name != "cover.jpg" && rFile.name != "Cover.jpg") {
             songList.add(rFile.name)
         }
     }
